@@ -1,0 +1,8 @@
+/solarclient
+/bin/
+/dist/
+/data.json
+*.test
+coverage.out
+.env
+.env.*
