@@ -26,7 +26,7 @@ import (
 //go:embed static/* page.html
 var assets embed.FS
 
-var page = template.Must(template.New("page.html").Funcs(template.FuncMap{"deletionCounts": deletionCounts, "variableJSON": variableJSON, "bodyFieldsJSON": bodyFieldsJSON}).ParseFS(assets, "page.html"))
+var page = template.Must(template.New("page.html").Funcs(template.FuncMap{"searchURL": searchURL, "deletionCounts": deletionCounts, "variableJSON": variableJSON, "bodyFieldsJSON": bodyFieldsJSON}).ParseFS(assets, "page.html"))
 
 type Server struct {
 	mu                sync.Mutex

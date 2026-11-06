@@ -8,6 +8,9 @@ class Node {
   setAttribute(key, value) { this.attributes[key] = value; }
   replaceChildren() { this.children = []; }
   before() {}
+  addEventListener() {}
+  getBoundingClientRect() { return { left: 0, right: 190 }; }
+  get parentElement() { return this; }
   focus() {}
   querySelectorAll() { return []; }
 }
@@ -19,6 +22,7 @@ const hooks = {};
 let warnings = 0;
 vm.runInNewContext(fs.readFileSync(__dirname + '/tabs.js', 'utf8').replace("  register(document.querySelector('#main'));", "  hooks.refresh = refresh; hooks.tabs = tabs; register(document.querySelector('#main'));"), {
   hooks,
+  ResizeObserver: class { observe() {} disconnect() {} },
   document: {
     createElement: () => { const node = new Node(); nodes.push(node); return node; },
     querySelector: () => panel,
@@ -31,7 +35,7 @@ vm.runInNewContext(fs.readFileSync(__dirname + '/tabs.js', 'utf8').replace("  re
   alert: () => warnings++,
 });
 assert.equal(nodes[1].attributes.role, 'tablist');
-assert.equal(nodes[4].attributes['aria-selected'], 'true');
+assert.equal(nodes.find(node => node.attributes.role === 'tab').attributes['aria-selected'], 'true');
 assert.equal(panel.attributes.role, 'tabpanel');
 let prevented = false;
 const unload = () => listeners.beforeunload({ preventDefault() { prevented = true; } });

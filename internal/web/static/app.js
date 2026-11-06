@@ -1,3 +1,57 @@
+// Flat preorder rows retain matching ancestors and descendants without a DOM tree.
+function searchVisibility(name, rows, query) {
+  const term = query.trim().toLowerCase();
+  const all = !term || name.toLowerCase().includes(term);
+  const visible = rows.map(() => all);
+  const parents = [];
+  rows.forEach((row, i) => {
+    while (parents.length && rows[parents.at(-1)].depth >= row.depth) parents.pop();
+    const match = [row.name, row.method, row.url].some(value => (value || '').toLowerCase().includes(term));
+    visible[i] = all || match || parents.some(index => rows[index].matched);
+    if (visible[i]) parents.forEach(index => { visible[index] = true; });
+    // Only direct matches propagate down, not ancestors retained as context.
+    if (row.folder) { row.matched = match; parents.push(i); }
+  });
+  return { visible, show: all || visible.some(Boolean) };
+}
+(() => {
+  const openStates = new WeakMap();
+  function filter() {
+    const input = document.getElementById('collection-search');
+    if (!input) return;
+    let found = false;
+    for (const collection of document.querySelectorAll('#collection-results > details')) {
+      const nodes = [...collection.querySelectorAll('[data-kind="folder"], [data-kind="request"]')];
+      const rows = nodes.map(node => ({ name: node.dataset.name, method: node.querySelector('[data-method]')?.dataset.method, url: node.dataset.searchUrl, depth: Number(node.dataset.depth || 0), folder: node.dataset.kind === 'folder' }));
+      const result = searchVisibility(collection.querySelector('summary').textContent, rows, input.value);
+      nodes.forEach((node, i) => { node.hidden = !result.visible[i]; });
+      collection.hidden = !result.show;
+      found ||= result.show;
+      if (input.value.trim()) {
+        if (!openStates.has(collection)) openStates.set(collection, collection.open);
+        if (result.show) collection.open = true;
+      } else if (openStates.has(collection)) {
+        collection.open = openStates.get(collection);
+        openStates.delete(collection);
+      }
+    }
+    document.getElementById('search-empty').hidden = found;
+  }
+  function clear() {
+    const input = document.getElementById('collection-search');
+    input.value = '';
+    filter();
+    input.focus();
+  }
+  document.addEventListener('input', event => { if (event.target.id === 'collection-search') filter(); });
+  document.addEventListener('click', event => { if (event.target.id === 'clear-collection-search') clear(); });
+  document.addEventListener('keydown', event => {
+    if (event.target.id === 'collection-search' && event.key === 'Escape') { event.preventDefault(); clear(); }
+  });
+  document.addEventListener('htmx:load', filter);
+  filter();
+})();
+
 // Delegated listeners survive HTMX body replacements.
 (() => {
   let context;
@@ -22,7 +76,7 @@
     const collection = target.closest('details[data-collection]');
     context = target.closest('[data-kind]');
     for (const button of menu.querySelectorAll('[data-organize]')) {
-      button.hidden = !context || (button.dataset.organize === 'move' && context.dataset.kind === 'collection') || (button.dataset.organize === 'create' && context.dataset.kind === 'request');
+      button.hidden = !context || (button.dataset.organize === 'move' && context.dataset.kind === 'collection') || (button.dataset.organize === 'create' && context.dataset.kind === 'request') || (button.dataset.organize === 'duplicate' && context.dataset.kind !== 'request');
     }
     document.getElementById('context-new-request').href = collection
       ? '/?collection=' + encodeURIComponent(collection.dataset.collection) : '/';
@@ -78,7 +132,7 @@
       dialog.querySelector('[data-organize-name]').hidden = !form.elements.name.required;
       dialog.querySelector('[data-organize-destination]').hidden = action !== 'create' && action !== 'move';
       document.getElementById('organize-title').textContent = action + ' ' + form.elements.kind.value;
-      dialog.querySelector('[data-organize-warning]').textContent = action === 'delete' ? 'Delete “' + context.dataset.name + '”: ' + context.dataset.counts + '. This cannot be undone.' : '';
+      dialog.querySelector('[data-organize-warning]').textContent = action === 'delete' ? 'Delete “' + context.dataset.name + '”: ' + context.dataset.counts + '. This cannot be undone.' : action === 'duplicate' ? 'Copy the saved request into the same destination. Unsaved edits and selected uploads are not copied.' : '';
       dialog.showModal();
     }
   });

@@ -94,6 +94,17 @@ func organize(d *store.Data, v url.Values) error {
 			return err
 		}
 		d.Folders = append(d.Folders, store.Folder{ID: id(), Name: name, CollectionID: c, ParentID: p})
+	case "duplicate":
+		if kind != "request" {
+			return fmt.Errorf("only saved requests can be duplicated")
+		}
+		copy := d.Requests[ri]
+		copy.ID = id()
+		copy.Name += " (copy)"
+		copy.Headers = slices.Clone(copy.Headers)
+		copy.Query = slices.Clone(copy.Query)
+		copy.Body.Fields = slices.Clone(copy.Body.Fields)
+		d.Requests = append(d.Requests, copy)
 	case "move":
 		if kind == "collection" {
 			return fmt.Errorf("collections are already top-level")

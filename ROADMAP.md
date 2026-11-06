@@ -39,9 +39,10 @@ Checked items are implemented, not a claim of full Postman compatibility. Browse
 
 ## Phase 2 — Faster daily workflow
 
-- [x] Multiple in-memory request tabs; saved-ID deduplication, independent editors/uploads/responses, keyboard navigation, close/unload guards; reload loses state.
-- [ ] Duplicate requests.
-- [ ] Collection/request search.
+- [x] Multiple request tabs; saved-ID deduplication, independent editors/uploads/responses, keyboard navigation, close/unload guards. Refresh restores up to 100 saved IDs/order/active saved selection from browser-tab-scoped sessionStorage via authenticated same-origin pages; no secrets/content stored in browser storage. Drafts/unsaved edits/responses/uploads still lost, with visible warning.
+- [x] Duplicate saved requests through context menu/dialog; independent ID and field slices, same destination, all saved fields preserved; no uploaded bytes or unsaved changes copied.
+- [x] Sidebar collection/folder/request search by name, method, literal URL host/path; case-insensitive ancestor context, matching descendants, Clear/Escape, empty status. Browser-only, no query persistence; auth/body/variables and URL credentials/query/fragment excluded.
+- [x] Compact desktop buttons/controls (32px, thin borders, 4px corners); touch/mobile targets remain 44px. Visual/browser accessibility verification pending.
 - [ ] Bounded request history and replay, excluding secrets by default.
 - [ ] Import/export cURL.
 - [ ] SolarClient backup/export.
@@ -76,7 +77,7 @@ Implement only when an actual workflow requires them.
 - Nested variable expansion is unsupported.
 - Variable editing currently uses JSON, not a row-based editor; disabled entries, ordering, duplicates, and multiline values are preserved.
 - Environment cookie initializes new tabs; each open request tab retains its own selection.
-- JavaScript preserves request drafts/uploads across sidebar operations; page responses refresh all tabs' collection/environment options. Removed selections visibly block submission until explicitly changed. Deleted requests become labelled unsaved drafts saved only under new IDs; stale server saves are rejected. Request content/name/destination snapshots are not synchronized with sidebar rename/move. No live cross-window synchronization or tab persistence across reload; unload warnings are best-effort. Reconciliation has Node DOM-double checks; real browser/accessibility checks remain pending (browser tooling unavailable).
+- JavaScript preserves request drafts/uploads across sidebar operations; page responses refresh all tabs' collection/environment options. Removed selections visibly block submission until explicitly changed. Deleted requests become labelled unsaved drafts saved only under new IDs; stale server saves are rejected. Request content/name/destination snapshots are not synchronized with sidebar rename/move. No live cross-window synchronization; only saved tab IDs/order/active selection survive refresh (100-tab limit, sessionStorage optional). Deleted/unavailable IDs are skipped; dirty snapshots, draft tabs, responses, selected files and per-tab environment selections do not persist. Unload warnings are best-effort. Reconciliation has Node DOM-double checks; real browser/accessibility checks remain pending (browser tooling unavailable).
 - Credentials and imported variable values are stored unencrypted locally.
 - Non-loopback access uses unencrypted HTTP; use a trusted network or SSH forwarding.
 - Go strings, slices, maps, and HTTP internals still use indirection; zero pointer chasing is not a literal guarantee.

@@ -1,12 +1,25 @@
 package web
 
-import "solarclient/internal/store"
+import (
+	"net/url"
+
+	"solarclient/internal/store"
+)
+
+// Only literal URL host/path are searchable; never expose credentials or query values.
+func searchURL(raw string) string {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return ""
+	}
+	return u.Host + u.EscapedPath()
+}
 
 // Navigation remains flat: indices connect records, never heap-allocated tree nodes.
 type navRow struct {
-	ID, Name, Method, CollectionID string
-	Depth                          int
-	Folder                         bool
+	ID, Name, Method, CollectionID, URL string
+	Depth                               int
+	Folder                              bool
 }
 
 func navigation(data store.Data) []navRow {
@@ -53,7 +66,7 @@ func navigation(data store.Data) []navRow {
 				push(parent{c.ID, f.ID}, e.depth+1)
 			} else {
 				r := data.Requests[e.index]
-				rows = append(rows, navRow{ID: r.ID, Name: r.Name, Method: r.Method, CollectionID: c.ID, Depth: e.depth})
+				rows = append(rows, navRow{ID: r.ID, Name: r.Name, Method: r.Method, URL: r.URL, CollectionID: c.ID, Depth: e.depth})
 			}
 		}
 	}
