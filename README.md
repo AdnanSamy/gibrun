@@ -8,6 +8,8 @@ Feature status and planned work: [Roadmap](ROADMAP.md).
 
 Local HTTP request editor. Requires Go 1.22+.
 
+> Kalau nge-bug, fix sendiri mas. Contributions welcome!
+
 ```sh
 go run ./cmd/gibrun
 ```
