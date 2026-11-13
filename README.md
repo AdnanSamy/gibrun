@@ -2,6 +2,10 @@
 
 Feature status and planned work: [Roadmap](ROADMAP.md).
 
+## License
+
+[MIT](LICENSE). Vendored [htmx](https://htmx.org/) is distributed under the [Zero-Clause BSD license](https://github.com/bigskysoftware/htmx/blob/master/LICENSE).
+
 Local HTTP request editor. Requires Go 1.22+.
 
 ```sh
