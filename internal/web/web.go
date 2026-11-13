@@ -1,4 +1,4 @@
-// Package web serves the local SolarClient interface.
+// Package web serves the local gibrun interface.
 package web
 
 import (
@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
-	"solarclient/internal/client"
-	"solarclient/internal/postman"
-	"solarclient/internal/store"
+	"gibrun/internal/client"
+	"gibrun/internal/postman"
+	"gibrun/internal/store"
 )
 
 //go:embed static/* page.html
@@ -57,18 +57,18 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Referrer-Policy", "no-referrer")
 	w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'none'; frame-ancestors 'none'")
-	if (r.URL.Path == "/static/htmx.min.js" || r.URL.Path == "/static/app.js" || r.URL.Path == "/static/request.js" || r.URL.Path == "/static/tabs.js") && r.Method == "GET" {
+	if (r.URL.Path == "/static/htmx.min.js" || r.URL.Path == "/static/app.js" || r.URL.Path == "/static/request.js" || r.URL.Path == "/static/tabs.js" || r.URL.Path == "/static/split.js") && r.Method == "GET" {
 		b, _ := assets.ReadFile(strings.TrimPrefix(r.URL.Path, "/"))
 		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
 		w.Write(b)
 		return
 	}
 	if r.Method == "GET" && r.URL.Query().Get("token") == s.token {
-		http.SetCookie(w, &http.Cookie{Name: "solar_session", Value: s.token, Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode})
+		http.SetCookie(w, &http.Cookie{Name: "gibrun_session", Value: s.token, Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode})
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	cookie, err := r.Cookie("solar_session")
+	cookie, err := r.Cookie("gibrun_session")
 	if err != nil || cookie.Value != s.token {
 		http.Error(w, "unauthorized", http.StatusForbidden)
 		return
@@ -124,7 +124,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) renderFor(w http.ResponseWriter, r *http.Request, selected, message string, response *client.Response, draft ...store.Request) {
 	environment := ""
-	if cookie, err := r.Cookie("solar_environment"); err == nil {
+	if cookie, err := r.Cookie("gibrun_environment"); err == nil {
 		environment = cookie.Value
 	}
 	if r.Method == "POST" && r.Form.Has("environment") {
@@ -147,7 +147,7 @@ func (s *Server) renderSelected(w http.ResponseWriter, environment, selected, me
 	if !validEnvironment {
 		environment = ""
 	}
-	http.SetCookie(w, &http.Cookie{Name: "solar_environment", Value: environment, Path: "/", SameSite: http.SameSiteStrictMode})
+	http.SetCookie(w, &http.Cookie{Name: "gibrun_environment", Value: environment, Path: "/", SameSite: http.SameSiteStrictMode})
 	var req store.Request
 	req.Method = "GET"
 	for _, v := range s.data.Requests {

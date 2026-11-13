@@ -1,4 +1,11 @@
-# SolarClient feature roadmap
+# gibrun feature roadmap
+
+## Rename compatibility
+
+- [x] Lowercase `gibrun` UI/module/binary and `cmd/gibrun`; native OS configuration directory.
+- [x] Default-only legacy `solarclient` store migration: validated exclusive snapshot, no overwrite/deletion, visible errors, safe retry. Explicit `-data` bypasses it.
+- [x] Saved tab ID compatibility fallback; new cookies require the fresh startup URL. See [migration and rollback](README.md#rename-and-existing-data).
+- [ ] Windows runtime migration/ACL verification (cross-compilation only); real-browser tab migration checks.
 
 Personal, lightweight Postman replacement for everyday CRUD APIs.
 
@@ -7,7 +14,7 @@ Checked items are implemented, not a claim of full Postman compatibility. Browse
 ## Phase 1 — Everyday CRUD and migration
 
 - [x] Go backend, Go templates, embedded HTMX; no frontend build pipeline.
-- [x] Responsive dark UI with request editor tabs and response panel.
+- [x] Responsive dark UI with request editor tabs and response panel; desktop resizable split, stacked on narrow or short screens.
 - [x] HTTP method, URL, headers, query parameters, raw/JSON payload editing.
 - [x] Explicit save destination and saved/unsaved status; sending does not save.
 - [x] Collection creation, rename, confirmed cascade deletion.
@@ -45,7 +52,7 @@ Checked items are implemented, not a claim of full Postman compatibility. Browse
 - [x] Compact desktop buttons/controls (32px, thin borders, 4px corners); touch/mobile targets remain 44px. Visual/browser accessibility verification pending.
 - [ ] Bounded request history and replay, excluding secrets by default.
 - [ ] Import/export cURL.
-- [ ] SolarClient backup/export.
+- [ ] gibrun backup/export.
 - [ ] Workflow keyboard shortcuts.
 - [ ] Request/folder ordering.
 - [ ] Collapsible nested folders.

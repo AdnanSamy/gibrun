@@ -1,16 +1,30 @@
-# SolarClient
+# gibrun
 
 Feature status and planned work: [Roadmap](ROADMAP.md).
 
-Local HTTP request editor. Requires Go 1.23+.
+Local HTTP request editor. Requires Go 1.22+.
 
 ```sh
-go run ./cmd/solarclient
+go run ./cmd/gibrun
 ```
 
-Open the printed one-time URL. Data is stored in the OS configuration directory under `solarclient/data.json`; override with `-data`. The server listens on loopback by default. To reach it from another machine, bind to the VM's specific IP: `go run ./cmd/solarclient -listen 192.168.1.10:8080` (replace the address). Open the exact printed URL; permit the port in the VM firewall if needed.
+Open the printed one-time URL. Data is stored in the OS configuration directory under `gibrun/data.json`; override with `-data`. The server listens on loopback by default. To reach it from another machine, bind to the VM's specific IP: `go run ./cmd/gibrun -listen 192.168.1.10:8080` (replace the address). Open the exact printed URL; permit the port in the VM firewall if needed.
 
-**Security:** Non-loopback access uses unencrypted HTTP. Anyone who can observe network traffic can steal the session and credentials and execute requests through SolarClient. Use only on a trusted network; prefer SSH forwarding otherwise. Credentials and imported variables are stored unencrypted; protect the data file and avoid sharing the startup URL.
+**Security:** Non-loopback access uses unencrypted HTTP. Anyone who can observe network traffic can steal the session and credentials and execute requests through gibrun. Use only on a trusted network; prefer SSH forwarding otherwise. Credentials and imported variables are stored unencrypted; protect the data file and avoid sharing the startup URL.
+
+## Rename and existing data
+
+`go build ./cmd/gibrun` produces `gibrun` (`gibrun.exe` on Windows). The module, UI and command now use lowercase `gibrun`.
+
+Default storage uses Go's `os.UserConfigDir`: Windows `%AppData%\gibrun\data.json`, Linux `$XDG_CONFIG_HOME/gibrun/data.json` (otherwise `$HOME/.config/gibrun/data.json`), macOS `$HOME/Library/Application Support/gibrun/data.json`.
+
+On default startup only, if the new file is absent, the legacy `solarclient/data.json` under that same configuration root is validated with the existing store loader, copied into a private temporary snapshot, validated again, then published exclusively without overwriting another file. Existing new files always win. The old file remains unchanged. Corruption, permission errors or unsupported hard links stop startup visibly; no partial destination is published, so fix the problem and retry. Any explicit `-data` bypasses migration, even if it names the default path. Missing legacy data starts fresh.
+
+Rollback: stop gibrun, launch the backup with its original data or explicit `-data`. Migration never deletes the old store; subsequent edits in the two stores are independent, not synchronized. Do not run both versions against the same file. To recover newer edits, retain both files and explicitly select the desired store; no reverse overwrite is automatic.
+
+Files retain the existing security model: new directories request `0700`, files `0600` on Unix. Windows mode bits do not enforce equivalent isolation: restrict the configuration directory with Windows ACLs. Windows was cross-compiled only, not runtime-tested; verify `%AppData%`, ACL inheritance, NTFS hard links and retry behavior on Windows before relying on migration. Non-hard-link filesystems require an explicit `-data` path or manual copy after stopping both versions.
+
+Browser sessionStorage reads legacy `solarclient.request-tabs.v1` only when `gibrun.request-tabs.v1` is absent; only validated saved IDs/order/selection are retained, never secrets or request content. Writes use the new key and leave the old key intact. This works only within the same browser tab and origin (including port); a changed port cannot access old browser storage. Cookies now use `gibrun_session` and `gibrun_environment`; old cookies are not accepted or migrated. Open the newly printed startup URL to authenticate, then reselect the environment.
 
 Create collections and requests, import Postman collections or environments, select an environment when sending. Variables use `{{name}}`; environment values override collection values. Responses are limited to 10 MiB. TLS verification can be disabled explicitly per request.
 

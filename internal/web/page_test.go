@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func TestWorkbenchRender(t *testing.T) {

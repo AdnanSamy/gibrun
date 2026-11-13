@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func TestTimeoutSaveValidation(t *testing.T) {

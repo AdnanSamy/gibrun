@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"gibrun/internal/store"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"solarclient/internal/store"
 )
 
 func bodyFieldsJSON(fields []store.BodyField) string {

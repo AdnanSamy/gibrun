@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func TestVariableCRUD(t *testing.T) {
@@ -24,7 +24,7 @@ func TestVariableCRUD(t *testing.T) {
 		r := httptest.NewRequest("POST", "http://localhost/variables", strings.NewReader(form.Encode()))
 		r.Header.Set("Origin", "http://localhost")
 		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		r.AddCookie(&http.Cookie{Name: "solar_session", Value: s.token})
+		r.AddCookie(&http.Cookie{Name: "gibrun_session", Value: s.token})
 		w := httptest.NewRecorder()
 		s.ServeHTTP(w, r)
 		return w
@@ -100,7 +100,7 @@ func TestVariablePrecedenceAndSelection(t *testing.T) {
 	s := &Server{data: data}
 	for _, method := range []string{"GET", "POST"} {
 		r := httptest.NewRequest(method, "http://localhost/", nil)
-		r.AddCookie(&http.Cookie{Name: "solar_environment", Value: "e"})
+		r.AddCookie(&http.Cookie{Name: "gibrun_environment", Value: "e"})
 		if method == "POST" {
 			r.Form = url.Values{"environment": {"e"}}
 		}
@@ -111,7 +111,7 @@ func TestVariablePrecedenceAndSelection(t *testing.T) {
 		}
 	}
 	r := httptest.NewRequest("GET", "http://localhost/", nil)
-	r.AddCookie(&http.Cookie{Name: "solar_environment", Value: "deleted"})
+	r.AddCookie(&http.Cookie{Name: "gibrun_environment", Value: "deleted"})
 	w := httptest.NewRecorder()
 	s.renderFor(w, r, "", "", nil)
 	if w.Result().Cookies()[0].Value != "" {

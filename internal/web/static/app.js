@@ -65,7 +65,7 @@ function searchVisibility(name, rows, query) {
   }
   document.addEventListener('change', event => {
     if (event.target.id === 'organize-collection') filterParents();
-    if (event.target.id === 'environment') document.cookie = 'solar_environment=' + encodeURIComponent(event.target.value) + '; Path=/; SameSite=Strict';
+    if (event.target.id === 'environment') document.cookie = 'gibrun_environment=' + encodeURIComponent(event.target.value) + '; Path=/; SameSite=Strict';
   });
   function closeMenu() {
     const menu = document.getElementById('collection-menu');

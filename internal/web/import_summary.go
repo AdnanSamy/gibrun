@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func importSummary(kind, name string, counts string, warnings []string) string {

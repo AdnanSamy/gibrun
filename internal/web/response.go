@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"solarclient/internal/client"
+	"gibrun/internal/client"
 )
 
 type responseBody struct {

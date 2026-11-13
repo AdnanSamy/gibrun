@@ -1,10 +1,10 @@
 package web
 
 import (
+	"gibrun/internal/store"
 	"net/http/httptest"
 	"net/url"
 	"path/filepath"
-	"solarclient/internal/store"
 	"strings"
 	"testing"
 )

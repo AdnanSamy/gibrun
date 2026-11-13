@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func TestDisabledFieldsSaveAndExecute(t *testing.T) {

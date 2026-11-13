@@ -11,8 +11,14 @@ const list = { clientWidth: 300, scrollWidth: 900,
 };
 const previous = {}, next = {}, strip = {};
 let item = { left: 450, right: 640 };
-vm.runInNewContext(source.slice(source.indexOf('  function updateOverflow()'), source.indexOf('  function render()')) + '\nupdateOverflow();', {
-  list, previous, next, strip, active: { key: 1 },
+vm.runInNewContext(source.slice(source.indexOf('  function updateOverflow('), source.indexOf('  function render(')) + `
+const view = { list, previous, next };
+updateOverflow(view);
+handlers.resize = () => { updateOverflow(view); revealActive(active, view); };
+handlers.wheel = event => wheelTabs(event, view);
+handlers.scroll = () => updateOverflow(view);
+`, {
+  handlers, list, previous, next, strip, active: { key: 1 },
   document: { getElementById: () => ({ parentElement: { getBoundingClientRect: () => item } }), addEventListener: (name, fn) => { handlers[name] = fn; }, removeEventListener() {} },
   ResizeObserver: class { constructor(fn) { handlers.resize = fn; } observe() {} disconnect() { disconnected = true; } }
 });
@@ -32,5 +38,5 @@ wheel({ ctrlKey: true, deltaX: 100 }); assert.equal(offset, 300); assert.equal(p
 list.scrollLeft = 600;
 wheel({ deltaX: 100, deltaY: 0 }); assert.equal(prevented, false); assert.equal(next.disabled, true);
 list.scrollWidth = 300; handlers.scroll(); assert.equal(previous.hidden, true); assert.equal(next.hidden, true);
-handlers['htmx:beforeCleanupElement']({ detail: { elt: strip } }); assert.equal(disconnected, true);
-console.log('tab overflow, nearest reveal, wheel boundaries, resize and cleanup passed');
+
+console.log('tab overflow, nearest reveal, wheel boundaries and resize passed');

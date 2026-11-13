@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func TestFormBodies(t *testing.T) {

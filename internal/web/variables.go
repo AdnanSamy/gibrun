@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 // Variable JSON preserves multiline values, ordering, duplicates, and disabled entries.

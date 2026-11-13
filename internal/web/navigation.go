@@ -3,7 +3,7 @@ package web
 import (
 	"net/url"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 // Only literal URL host/path are searchable; never expose credentials or query values.

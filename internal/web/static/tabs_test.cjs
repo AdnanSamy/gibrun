@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const listeners = {};
 class Node {
-  constructor() { this.children = []; this.attributes = {}; }
+  constructor() { this.children = []; this.attributes = {}; this.dataset = {}; }
   append(...nodes) { this.children.push(...nodes); }
   setAttribute(key, value) { this.attributes[key] = value; }
   replaceChildren() { this.children = []; }
@@ -20,7 +20,7 @@ panel.querySelector = () => form;
 const nodes = [];
 const hooks = {};
 let warnings = 0;
-vm.runInNewContext(fs.readFileSync(__dirname + '/tabs.js', 'utf8').replace("  register(document.querySelector('#main'));", "  hooks.refresh = refresh; hooks.tabs = tabs; register(document.querySelector('#main'));"), {
+vm.runInNewContext(fs.readFileSync(__dirname + '/tabs.js', 'utf8').replace("  register(state, view, services, document.querySelector('#main'));", "  hooks.refresh = page => refresh(state.tabs, page); hooks.tabs = state.tabs; register(state, view, services, document.querySelector('#main'));"), {
   hooks,
   ResizeObserver: class { observe() {} disconnect() {} },
   document: {
@@ -30,7 +30,8 @@ vm.runInNewContext(fs.readFileSync(__dirname + '/tabs.js', 'utf8').replace("  re
     getElementById: () => new Node(),
     addEventListener: (name, callback) => { listeners[name] = callback; },
   },
-  window: { addEventListener: (name, callback) => { listeners[name] = callback; } },
+  sessionStorage: { getItem: () => null, setItem() {} }, DOMParser: class {}, location: {},
+  window: { fetch() {}, addEventListener: (name, callback) => { listeners[name] = callback; } },
   htmx: { process() {} },
   alert: () => warnings++,
 });

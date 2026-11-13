@@ -1,8 +1,8 @@
 package web
 
 import (
+	"gibrun/internal/store"
 	"reflect"
-	"solarclient/internal/store"
 	"strings"
 	"testing"
 )

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"solarclient/internal/client"
+	"gibrun/internal/client"
 )
 
 func TestResponseFormatting(t *testing.T) {

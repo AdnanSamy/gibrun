@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"solarclient/internal/store"
+	"gibrun/internal/store"
 )
 
 func descendants(d store.Data, kind, id string) map[string]bool {
